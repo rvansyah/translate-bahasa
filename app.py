@@ -47,7 +47,7 @@ if jenis == 'Bahasa Dunia (Deteksi Otomatis)':
     dest = st.text_input("Kode bahasa tujuan (misal: 'en', 'ar', 'ja'):", value='en')
     if st.button("Terjemahkan"):
         if not googletrans_ok:
-            st.error("Modul googletrans belum ter-install. Tambahkan 'googletrans==4.0.0rc1' ke requirements.txt dan deploy ulang.")
+            st.error("Modul googletrans belum ter-install. Silakan pastikan file requirements.txt berisi 'googletrans==4.0.0rc1' lalu deploy ulang.")
         elif text.strip() == "":
             st.warning("Teks tidak boleh kosong.")
         else:
