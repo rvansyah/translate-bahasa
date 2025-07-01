@@ -1,7 +1,12 @@
 import streamlit as st
-from googletrans import Translator
 
-# Contoh kamus bahasa daerah Indonesia (bisa diperluas)
+try:
+    from googletrans import Translator
+    googletrans_ok = True
+except ModuleNotFoundError:
+    googletrans_ok = False
+
+# Contoh kamus bahasa daerah Indonesia
 bahasa_daerah_dict = {
     'jawa': {
         'halo': 'halo',
@@ -25,18 +30,13 @@ bahasa_daerah_dict = {
 
 def translate_daerah(text, daerah):
     dictionary = bahasa_daerah_dict.get(daerah, {})
-    # Lowercase untuk pencocokan sederhana
     return dictionary.get(text.lower(), '[Terjemahan tidak tersedia]')
 
-# Streamlit App
 st.title("Aplikasi Translate Bahasa Dunia & Bahasa Daerah Indonesia")
-
-st.write(
-    """
-    Aplikasi ini dapat menerjemahkan antar bahasa dunia menggunakan Google Translate, 
-    serta beberapa bahasa daerah Indonesia (Jawa, Sunda, Batak).
-    """
-)
+st.write("""
+Aplikasi ini dapat menerjemahkan antar bahasa dunia menggunakan Google Translate, 
+serta beberapa bahasa daerah Indonesia (Jawa, Sunda, Batak).
+""")
 
 jenis = st.radio(
     "Pilih jenis terjemahan:", 
@@ -48,11 +48,13 @@ if jenis == 'Bahasa Dunia':
     src = st.text_input("Kode bahasa asal (misal: 'id', 'en', 'fr'):", value='id')
     dest = st.text_input("Kode bahasa tujuan (misal: 'en', 'ar', 'ja'):", value='en')
     if st.button("Terjemahkan"):
-        if text.strip() == "":
+        if not googletrans_ok:
+            st.error("Modul googletrans belum ter-install. Tambahkan 'googletrans==4.0.0rc1' ke requirements.txt dan deploy ulang.")
+        elif text.strip() == "":
             st.warning("Teks tidak boleh kosong.")
         else:
-            translator = Translator()
             try:
+                translator = Translator()
                 result = translator.translate(text, src=src, dest=dest)
                 st.success(f"Hasil Terjemahan ({src} → {dest}):")
                 st.write(result.text)
@@ -69,6 +71,6 @@ elif jenis == 'Bahasa Daerah Indonesia':
             hasil = translate_daerah(text, daerah)
             st.success(f"Hasil Terjemahan ke {daerah.capitalize()}:")
             st.write(hasil)
-            
+
 st.markdown("---")
 st.markdown("**Catatan:** Untuk bahasa daerah, kosakata masih terbatas. Silakan kontribusi untuk menambah kosakata!")
