@@ -32,20 +32,18 @@ def translate_daerah(text, daerah):
     dictionary = bahasa_daerah_dict.get(daerah, {})
     return dictionary.get(text.lower(), '[Terjemahan tidak tersedia]')
 
-st.title("Aplikasi Translate Bahasa Dunia & Bahasa Daerah Indonesia")
+st.title("Aplikasi Translate Otomatis Bahasa Dunia & Bahasa Daerah Indonesia")
 st.write("""
-Aplikasi ini dapat menerjemahkan antar bahasa dunia menggunakan Google Translate, 
-serta beberapa bahasa daerah Indonesia (Jawa, Sunda, Batak).
+Aplikasi ini dapat menerjemahkan antar bahasa dunia dengan deteksi otomatis serta beberapa bahasa daerah Indonesia (Jawa, Sunda, Batak).
 """)
 
 jenis = st.radio(
     "Pilih jenis terjemahan:", 
-    ('Bahasa Dunia', 'Bahasa Daerah Indonesia')
+    ('Bahasa Dunia (Deteksi Otomatis)', 'Bahasa Daerah Indonesia')
 )
 
-if jenis == 'Bahasa Dunia':
+if jenis == 'Bahasa Dunia (Deteksi Otomatis)':
     text = st.text_area("Masukkan teks yang ingin diterjemahkan:")
-    src = st.text_input("Kode bahasa asal (misal: 'id', 'en', 'fr'):", value='id')
     dest = st.text_input("Kode bahasa tujuan (misal: 'en', 'ar', 'ja'):", value='en')
     if st.button("Terjemahkan"):
         if not googletrans_ok:
@@ -55,8 +53,10 @@ if jenis == 'Bahasa Dunia':
         else:
             try:
                 translator = Translator()
-                result = translator.translate(text, src=src, dest=dest)
-                st.success(f"Hasil Terjemahan ({src} → {dest}):")
+                result = translator.translate(text, src='auto', dest=dest)
+                detected = result.src
+                st.info(f"Deteksi bahasa: {detected}")
+                st.success(f"Hasil Terjemahan ({detected} → {dest}):")
                 st.write(result.text)
             except Exception as e:
                 st.error(f"Gagal menerjemahkan: {e}")
